@@ -8,6 +8,10 @@
 
     if(isset($_GET['id'])){
         $id = $_GET['id'];
+        if(isset($_GET['id_new'])){
+            $idnew=$_GET['id_new'];
+            $id = $idnew;
+        }
         $query = "SELECT * FROM `mitglieder` WHERE `id` = $id";
         $result = mysqli_query($connection, $query);
 
@@ -30,43 +34,73 @@
         
         if(isset($_GET['id_new'])){
             $idnew=$_GET['id_new'];
-        }
-        
-        //hier noch die Validation vom Update einbauen - Error Message nicht vergessen!
-        // if($f_name == "" || empty($f_name)){
-
-        //     header('location:index.php?message=Bitte den Vornamen eingeben!');
-
-        // }
-
-        // elseif($l_name == "" || empty($l_name)){
-
-        //     header('location:index.php?message=Bitte den Nachnamen eingeben!');
-
-        // }
-
-        // elseif($city == "" || empty($city)){
-
-        //     header('location:index.php?message=Bitte die Stadt eingeben!');
-
-        // }
-
-        // else{
-
-        $query = "UPDATE `mitglieder` SET `first_name`='$fname', `last_name`='$lname', `city`='$city' WHERE `id`=$idnew";
-        $result = mysqli_query($connection, $query);
+            $id = $idnew;
+            $query = "SELECT * FROM `mitglieder` WHERE `id` = $id";
+            $result = mysqli_query($connection, $query);
 
         if(!$result){
             die("Query ist gefailed" . mysqli_error($connection));
         }
-        else{
-            header('location:index.php?update_msg=Daten erfolgreich bearbeitet!');
-        }
-    }
 
+        else {
+            $row = mysqli_fetch_assoc($result);
+        }
+        
+        
+        //hatte ich hier glücklicherweise vorbereitet
+        if($fname == "" || empty($fname)){
+
+            $error = "Bitte den Vornamen eingeben";
+            $header = "'location:update_page_1.php?id=".$id."'";
+            header($header);
+
+
+        }
+
+         elseif($lname == "" || empty($lname)){
+
+
+             $error = "Bitte den Nachnamen eingeben";
+             $header = "'location:update_page_1.php?id=".$id."'";
+             header($header);
+
+         }
+
+         elseif($city == "" || empty($city)){
+
+
+             $error = "Bitte die Stadt eingeben";
+             $header = "'location:update_page_1.php?id=".$id."'";
+             header($header);
+
+         }
+
+         else{
+
+            $query = "UPDATE `mitglieder` SET `first_name`='$fname', `last_name`='$lname', `city`='$city' WHERE `id`=$idnew";
+            $result = mysqli_query($connection, $query);
+
+            if(!$result){
+                die("Query ist gefailed" . mysqli_error($connection));
+            }
+            else{
+                header('location:index.php?update_msg=Daten erfolgreich bearbeitet!');
+            }
+         }
+    }
+}
 ?>
 
+<?php 
 
+        if(isset($error)){
+        ?>
+            <h6 style="color:green; text-align: center">
+        <?php
+            echo $error . "</h6>";
+        }
+
+?>
 
 <form action="update_page_1.php?id_new=<?php echo $id;?>" method="post" >
     <div class="form-group" style="margin-bottom: 10px">
